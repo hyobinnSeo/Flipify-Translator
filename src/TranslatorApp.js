@@ -9,31 +9,128 @@ const TranslatorApp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showInstructions, setShowInstructions] = useState(false);
-  const [preInstructions, setPreInstructions] = useState('[System] You are a Korean to English translator. Please follow these instructions 1. Take user input and translate it into English. 2. Use natural, colloquial language. 3. Include two additional alternatives. [/System] User Input:');
-  const [postInstructions, setPostInstructions] = useState('[System] Don\'t include anything in your answer other than the results of your translation. [/System] [Format] 번역 결과: (Insert) \n\n 대안1: (Insert) \n\n 대안2: [/Format]');
+  const [selectedModel, setSelectedModel] = useState('gemini');
+  
+  // 모델별 프롬프트 설정
+  const [modelInstructions, setModelInstructions] = useState({
+    gemini: {
+      pre: '[System] You are a Korean to English translator. Please follow these instructions 1. Take user input and translate it into English. 2. Use natural, colloquial language. 3. Include two additional alternatives. [/System] User Input:',
+      post: '[System] Don\'t include anything in your answer other than the results of your translation. [/System] [Format] 번역 결과: (Insert) \n\n 대안1: (Insert) \n\n 대안2: [/Format]'
+    },
+    euryale: {
+      pre: 'You are a Korean to English translator. Translate the following Korean text to natural, colloquial English. Provide one main translation and two alternatives.',
+      post: 'Format your response as:\nMain: [translation]\nAlt 1: [alternative 1]\nAlt 2: [alternative 2]'
+    },
+    command: {
+      pre: 'You are a professional Korean to English translator. Your task is to translate the following text from Korean to English, maintaining natural expression. Provide a main translation and two alternative versions.',
+      post: 'Format:\n1. Main translation:\n2. Alternative 1:\n3. Alternative 2:'
+    }
+  });
+
+  const models = [
+    { id: 'gemini', name: 'Gemini 1.5', api: 'google' },
+    { id: 'euryale', name: 'Llama 3.1 Euryale 70B', api: 'openrouter' },
+    { id: 'command', name: 'Cohere Command R', api: 'openrouter' }
+  ];
+
+  const translateWithOpenRouter = async (text, modelId) => {
+    // OpenRouter의 정확한 모델 ID 사용
+    const modelUrl = modelId === 'euryale' 
+      ? 'sao10k/l3.1-euryale-70b'  // Euryale 모델
+      : 'cohere/command-r-08-2024';  // Cohere Command R 모델
+      
+    try {
+      console.log('Using model:', modelUrl); // 디버깅용 로그
+      console.log('Prompts:', {
+        pre: modelInstructions[modelId].pre,
+        post: modelInstructions[modelId].post
+      }); // 디버깅용 로그
+
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.REACT_APP_OPENROUTER_API_KEY}`,
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'Translator App'
+        },
+        body: JSON.stringify({
+          model: modelUrl,
+          messages: [
+            { role: "system", content: modelInstructions[modelId].pre },
+            { role: "user", content: text },
+            { role: "system", content: modelInstructions[modelId].post }
+          ]
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('API Error Details:', errorData);
+        throw new Error(errorData.error?.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('API Response:', data);
+      
+      if (!data.choices || !data.choices[0]?.message?.content) {
+        throw new Error('Unexpected API response format');
+      }
+
+      return data.choices[0].message.content;
+    } catch (error) {
+      console.error('OpenRouter API Error:', error);
+      throw new Error(
+        error.message === 'Unauthorized' 
+          ? 'API 키가 유효하지 않습니다. 환경 변수를 확인해주세요.'
+          : `번역 중 오류가 발생했습니다: ${error.message}`
+      );
+    }
+  };
+
+  const translateWithGemini = async (text) => {
+    try {
+      const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      
+      const prompt = `
+        Instructions: ${modelInstructions.gemini.pre}
+        Text to translate: ${text}
+        Additional requirements: ${modelInstructions.gemini.post}
+      `;
+
+      const result = await model.generateContent(prompt);
+      return result.response.text();
+    } catch (error) {
+      console.error('Gemini API Error:', error);
+      throw new Error(
+        error.message.includes('API key') 
+          ? 'Gemini API 키가 유효하지 않습니다. 환경 변수를 확인해주세요.'
+          : `번역 중 오류가 발생했습니다: ${error.message}`
+      );
+    }
+  };
 
   const handleTranslate = async () => {
     try {
       setIsLoading(true);
       setError('');
       
-      const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      let translatedResult;
+      if (selectedModel === 'gemini') {
+        translatedResult = await translateWithGemini(inputText);
+      } else {
+        translatedResult = await translateWithOpenRouter(inputText, selectedModel);
+      }
       
-      // Enhanced prompt with pre and post instructions
-      const prompt = `
-Instructions: ${preInstructions}
-Text to translate: ${inputText}
-Additional requirements: ${postInstructions}
-
-Please provide the translation while following the above instructions.`;
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      setTranslatedText(response.text());
+      if (!translatedResult) {
+        throw new Error('번역 결과가 없습니다.');
+      }
+      
+      setTranslatedText(translatedResult);
     } catch (err) {
       console.error('Translation error:', err);
-      setError('Failed to translate. Please try again.');
+      setError(err.message || '번역에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
       setCopySuccess(false);
@@ -66,32 +163,54 @@ Please provide the translation while following the above instructions.`;
     }
   };
 
-  return (
-    <div className="w-full max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg">
-        <div className="p-6">
-          {/* Instructions Toggle Button */}
-          <button
-            onClick={() => setShowInstructions(!showInstructions)}
-            className="mb-4 flex items-center text-gray-600 hover:text-gray-800"
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            {showInstructions ? 'Hide Instructions' : 'Show Instructions'}
-          </button>
+  const handleModelChange = (e) => {
+    setSelectedModel(e.target.value);
+    setTranslatedText(''); // Clear previous translation when model changes
+  };
 
-          {/* Instructions Settings */}
+  return (
+    <div className="w-full max-w-4xl mx-auto p-4 sm:p-6">
+      <div className="bg-white rounded-lg shadow-lg">
+        <div className="p-4 sm:p-6">
+          <div className="flex justify-between items-center mb-4">
+            <button
+              onClick={() => setShowInstructions(!showInstructions)}
+              className="flex items-center text-gray-600 hover:text-gray-800 text-sm sm:text-base"
+            >
+              <Settings className="h-4 w-4 mr-1 sm:mr-2" />
+              {showInstructions ? 'Hide Instructions' : 'Show Instructions'}
+            </button>
+
+            <select
+              value={selectedModel}
+              onChange={handleModelChange}
+              className="w-[180px] sm:w-[200px] text-sm sm:text-base p-1.5 sm:p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            >
+              {models.map((model) => (
+                <option key={model.id} value={model.id}>
+                  {model.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {showInstructions && (
-            <div className="mb-6 space-y-4 p-4 bg-gray-50 rounded-lg">
+            <div className="mb-6 space-y-4 p-3 sm:p-4 bg-gray-50 rounded-lg">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Pre-translation Instructions:
                 </label>
                 <input
                   type="text"
-                  value={preInstructions}
-                  onChange={(e) => setPreInstructions(e.target.value)}
+                  value={modelInstructions[selectedModel].pre}
+                  onChange={(e) => setModelInstructions({
+                    ...modelInstructions,
+                    [selectedModel]: {
+                      ...modelInstructions[selectedModel],
+                      pre: e.target.value
+                    }
+                  })}
                   className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g., Translate to a formal tone"
                 />
               </div>
               <div>
@@ -100,79 +219,82 @@ Please provide the translation while following the above instructions.`;
                 </label>
                 <input
                   type="text"
-                  value={postInstructions}
-                  onChange={(e) => setPostInstructions(e.target.value)}
+                  value={modelInstructions[selectedModel].post}
+                  onChange={(e) => setModelInstructions({
+                    ...modelInstructions,
+                    [selectedModel]: {
+                      ...modelInstructions[selectedModel],
+                      post: e.target.value
+                    }
+                  })}
                   className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g., Maintain technical terms as is"
                 />
               </div>
             </div>
           )}
 
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Input Section */}
+          <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
             <div className="flex-1 relative">
               <textarea
                 placeholder="Enter text to translate..."
-                className="w-full h-48 p-4 text-lg resize-none mt-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full h-48 p-3 sm:p-4 text-base sm:text-lg resize-none mt-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
               />
               {!inputText && (
                 <button
-                  className="absolute top-8 right-4 px-3 py-1 text-sm text-gray-500 hover:text-gray-700 flex items-center"
+                  className="absolute top-8 right-4 px-2 sm:px-3 py-1 text-sm text-gray-500 hover:text-gray-700 flex items-center"
                   onClick={handlePaste}
                 >
-                  <Clipboard className="h-4 w-4 mr-2" />
+                  <Clipboard className="h-4 w-4 mr-1 sm:mr-2" />
                   Paste
                 </button>
               )}
             </div>
 
-            {/* Translation Section */}
             <div className="flex-1">
               <textarea
                 readOnly
                 placeholder="Translation will appear here..."
-                className="w-full h-48 p-4 text-lg bg-gray-50 resize-none mt-4 border rounded-lg"
+                className="w-full h-48 p-3 sm:p-4 text-base sm:text-lg bg-gray-50 resize-none mt-4 border rounded-lg"
                 value={translatedText}
               />
             </div>
           </div>
 
           {error && (
-            <div className="text-red-500 text-center mt-4">
+            <div className="text-red-500 text-center mt-4 text-sm sm:text-base">
               {error}
             </div>
           )}
 
-          <div className="flex justify-center gap-4 mt-8">
+          <div className="flex justify-center gap-2 sm:gap-4 mt-6 sm:mt-8">
             <button
               onClick={handleTranslate}
               disabled={!inputText || isLoading}
-              className={`px-6 py-2 rounded-lg flex items-center ${
+              className={`px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg flex items-center text-sm sm:text-base ${
                 inputText && !isLoading
                   ? 'bg-blue-500 text-white hover:bg-blue-600' 
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >
-              <ArrowRightLeft className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <ArrowRightLeft className={`mr-1 sm:mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
               {isLoading ? 'Translating...' : 'Translate'}
             </button>
 
             {translatedText && (
               <button
                 onClick={handleCopy}
-                className="px-6 py-2 rounded-lg flex items-center bg-gray-100 hover:bg-gray-200"
+                className="px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg flex items-center bg-gray-100 hover:bg-gray-200 text-sm sm:text-base"
               >
                 {copySuccess ? (
                   <>
-                    <ClipboardCheck className="mr-2 h-4 w-4 text-green-500" />
+                    <ClipboardCheck className="mr-1 sm:mr-2 h-4 w-4 text-green-500" />
                     Copied!
                   </>
                 ) : (
                   <>
-                    <ClipboardCopy className="mr-2 h-4 w-4" />
+                    <ClipboardCopy className="mr-1 sm:mr-2 h-4 w-4" />
                     Copy
                   </>
                 )}
@@ -182,13 +304,13 @@ Please provide the translation while following the above instructions.`;
             <button
               onClick={handleClear}
               disabled={!inputText && !translatedText}
-              className={`px-6 py-2 rounded-lg flex items-center border ${
+              className={`px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg flex items-center border text-sm sm:text-base ${
                 inputText || translatedText
                   ? 'border-gray-300 hover:bg-gray-100'
                   : 'border-gray-200 text-gray-400 cursor-not-allowed'
               }`}
             >
-              <X className="mr-2 h-4 w-4" />
+              <X className="mr-1 sm:mr-2 h-4 w-4" />
               Clear
             </button>
           </div>
