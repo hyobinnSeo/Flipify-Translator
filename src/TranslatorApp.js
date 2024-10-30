@@ -48,90 +48,65 @@ const TONES = {
     [MODELS.GEMINI]: [
         {
             id: 'standard',
-            name: '표준 / Standard',
-            description: '일반적인 번역 / Regular translation'
+            name: 'Standard',
+            description: '일Regular translation'
         },
         {
             id: 'casual',
-            name: '캐주얼 / Casual',
-            description: '친근하고 편안한 말투 / Friendly and relaxed tone'
+            name: 'Casual',
+            description: 'Friendly and relaxed tone'
         },
         {
             id: 'formal',
-            name: '격식체 / Formal',
+            name: 'Formal',
             description: '공식적이고 예의 바른 말투 / Professional and polite tone'
         },
         {
             id: 'humorous',
-            name: '유머러스 / Humorous',
-            description: '유머러스하고 재치있는 말투 / Humorous and witty tone'
+            name: 'Humorous',
+            description: 'Humorous and witty tone'
         },
         {
             id: 'business',
-            name: '비즈니스 / Business',
-            description: '업무용 전문적인 말투 / Business-oriented tone'
+            name: 'Business',
+            description: 'Business-oriented tone'
         },
         {
-            id: 'educational',
-            name: '교육 / Educational',
-            description: '이해하기 쉬운 교육용 말투 / Clear instructional tone'
+            id: 'kid_friendly',
+            name: 'Kid-Friendly',
+            description: 'Simple and fun kid-friendly tone'
         },
         {
             id: 'literary',
-            name: '문학 / Literary',
-            description: '우아하고 세련된 문학적 말투 / Elegant literary style'
+            name: 'Literary',
+            description: 'Elegant literary style'
         },
-        {
-            id: 'diplomatic',
-            name: '외교 / Diplomatic',
-            description: '신중하고 정중한 말투 / Tactful and considerate tone'
-        },
-        {
-            id: 'marketing',
-            name: '마케팅 / Marketing',
-            description: '설득력 있는 홍보용 말투 / Persuasive marketing style'
-        },
-        {
-            id: 'academic',
-            name: '학술 / Academic',
-            description: '학술적이고 전문적인 말투 / Scholarly and technical tone'
-        },
-        {
-            id: 'legal',
-            name: '법률 / Legal',
-            description: '법률 문서 스타일 / Legal document style'
-        },
-        {
-            id: 'poetic',
-            name: '시적 / Poetic',
-            description: '운율있고 시적인 말투 / Rhythmic and poetic tone'
-        }
     ],
     [MODELS.COMMAND]: [
         {
             id: 'standard',
-            name: '표준 / Standard',
-            description: '일반적인 번역 / Regular translation'
+            name: 'Standard',
+            description: 'Regular translation'
         },
         {
             id: 'casual',
-            name: '캐주얼 / Casual',
-            description: '친근하고 편안한 말투 / Friendly and relaxed tone'
+            name: 'Casual',
+            description: 'Friendly and relaxed tone'
         },
         {
             id: 'formal',
             name: '격식체 / Formal',
-            description: '공식적이고 예의 바른 말투 / Professional and polite tone'
+            description: 'Professional and polite tone'
         },
         {
             id: 'humorous',
             name: '유머러스 / Humorous',
-            description: '유머러스하고 재치있는 말투 / Humorous and witty tone'
+            description: 'Humorous and witty tone'
         },
         {
             id: 'cardi_B',
-            name: '카디비 / Cardi B',
-            description: '거침없고 직설적인 말투 / Raw and direct street tone'
+            name: 'Cardi B',
+            description: 'Raw and direct street tone'
         }
     ]
 };
@@ -141,123 +116,85 @@ const DEFAULT_INSTRUCTIONS = {
         'pre-instruction': "You are a professional translator who specializes in providing accurate and natural translations. Your task is to create translations that convey the complete meaning, nuances, and cultural context of the source text while maintaining the linguistic features of the target language.",
         'post-instruction': "Note: Provide only the translated text. Do not include quotes, emojis, explanations or any additional comments.",
         'tone-instructions': {
-            'standard': `Tone and Style:
+            'standard': `Tone and Style: Standard
 - Maintain a neutral and clear tone
 - Use standard language conventions
 - Focus on accurate meaning transmission
 - Keep formal and informal elements balanced
 - Ensure natural flow in the target language`,
-            'casual': `Tone and Style:
+            'casual': `Tone and Style: Casual
 - Use everyday conversational language
 - Incorporate common colloquialisms when appropriate
 - Keep the tone friendly and approachable
 - Use contractions where natural
 - Maintain an informal yet respectful tone
 - Adapt idioms to target language equivalents`,
-            'formal': `Tone and Style:
+            'formal': `Tone and Style: Formal
 - Use formal language throughout
 - Maintain professional terminology
 - Avoid contractions and colloquialisms
 - Use proper honorifics where applicable
 - Keep a respectful and courteous tone
 - Prioritize precise and elegant expression`,
-            'humorous': `Tone and Style:
+            'humorous': `Tone and Style: Humorous
 - Use witty and clever expressions
 - Incorporate appropriate humor and wordplay
 - Keep the tone engaging and entertaining
 - Use creative language choices
 - Maintain cultural sensitivity while being playful
 - Adapt jokes and puns to target language context`,
-            'business': `Tone and Style:
+            'business': `Tone and Style: Business
 - Use professional business language
 - Incorporate industry-standard terminology
 - Maintain clear and concise expression
 - Use appropriate business formalities
 - Keep a professional yet accessible tone
 - Focus on clarity and efficiency in communication`,
-            'educational': `Tone and Style:
-- Use clear, instructional language
-- Break down complex concepts
-- Maintain an engaging teaching tone
-- Use examples where appropriate
-- Focus on clarity and comprehension
-- Include appropriate learning-oriented terminology`,
-            'literary': `Tone and Style:
+            'kid_friendly': `Tone and Style: Kid-Friendly
+- Use simple, friendly words
+- Make sure everything is easy to understand
+- Keep the tone encouraging and playful`,
+            'literary': `Tone and Style: Literary
 - Use sophisticated vocabulary and phrasing
 - Maintain artistic and creative expression
 - Preserve metaphors and literary devices
 - Focus on aesthetic quality
 - Keep the elegant and refined style
-- Adapt cultural references appropriately`,
-            'diplomatic': `Tone and Style:
-- Use tactful and measured language
-- Maintain diplomatic courtesy
-- Focus on neutral and balanced expression
-- Use appropriate diplomatic terminology
-- Avoid potentially sensitive phrasing
-- Preserve formal diplomatic conventions`,
-            'marketing': `Tone and Style:
-- Use persuasive and engaging language
-- Incorporate marketing terminology
-- Maintain brand voice and style
-- Focus on impact and call-to-action
-- Use compelling and attractive phrasing
-- Adapt promotional elements appropriately`,
-            'academic': `Tone and Style:
-- Use scholarly and technical language
-- Maintain academic conventions
-- Include field-specific terminology
-- Focus on precision and accuracy
-- Use appropriate citations and references
-- Preserve academic tone and structure`,
-            'legal': `Tone and Style:
-- Use precise legal terminology
-- Maintain legal document structure
-- Focus on exact meaning and implications
-- Use appropriate legal conventions
-- Preserve legal clarity and specificity
-- Include necessary legal formatting`,
-            'poetic': `Tone and Style:
-- Preserve rhythm and meter when possible
-- Maintain poetic devices and imagery
-- Focus on artistic expression
-- Use appropriate poetic conventions
-- Keep the lyrical quality
-- Adapt cultural poetic elements`
+- Adapt cultural references appropriately`
         }
     },
     [MODELS.COMMAND]: {
         'pre-instruction': "You are a professional translator who specializes in providing accurate and natural translations. Your task is to create translations that convey the complete meaning, nuances, and cultural context of the source text while maintaining the linguistic features of the target language.",
         'post-instruction': "Note: Provide only the translated text. Do not include quotes, emojis, explanations or any additional comments.",
         'tone-instructions': {
-            'standard': `Tone and Style:
+            'standard': `Tone and Style: Standard
 - Maintain a neutral and clear tone
 - Use standard language conventions
 - Focus on accurate meaning transmission
 - Keep formal and informal elements balanced
 - Ensure natural flow in the target language`,
-            'casual': `Tone and Style:
+            'casual': `Tone and Style: Casual
 - Use everyday conversational language
 - Incorporate common colloquialisms when appropriate
 - Keep the tone friendly and approachable
 - Use contractions where natural
 - Maintain an informal yet respectful tone
 - Adapt idioms to target language equivalents`,
-            'formal': `Tone and Style:
+            'formal': `Tone and Style: Formal
 - Use formal language throughout
 - Maintain professional terminology
 - Avoid contractions and colloquialisms
 - Use proper honorifics where applicable
 - Keep a respectful and courteous tone
 - Prioritize precise and elegant expression`,
-            'humorous': `Tone and Style:
+            'humorous': `Tone and Style: Humorous
 - Use witty and clever expressions
 - Incorporate appropriate humor and wordplay
 - Keep the tone engaging and entertaining
 - Use creative language choices
 - Maintain cultural sensitivity while being playful
 - Adapt jokes and puns to target language context`,
-            'cardi_B': `Tone and Style:
+            'cardi_B': `Tone and Style: Cardi B
 - Be bold and unapologetic in delivery
 - Keep it real and unfiltered AF
 - Incorporate current street slang and vernacular
@@ -395,7 +332,7 @@ const LanguageSelector = ({
     onResetTranslations
 }) => {
     const languages = [
-        { code: 'auto', name: 'Auto Detect / 자동 감지' },
+        { code: 'auto', name: 'Auto Detect' },
         { code: 'en', name: 'English' },
         { code: 'fr', name: 'French / Français' },
         { code: 'es', name: 'Spanish / Español' },
@@ -496,7 +433,7 @@ const ToneSelector = ({ selectedTone, onToneChange, selectedModel }) => {
                    hover:bg-gray-50 rounded-lg transition-colors"
             >
                 <Settings className="w-4 h-4" />
-                <span>번역 톤: {modelTones.find(t => t.id === selectedTone)?.name}</span>
+                <span>Tone: {modelTones.find(t => t.id === selectedTone)?.name}</span>
             </button>
 
             {showToneSelector && (
