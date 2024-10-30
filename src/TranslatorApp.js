@@ -926,141 +926,6 @@ const DialogWrapper = ({ isOpen, onClose, children, className = '' }) => {
     );
 };
 
-const InstructionsModal = ({ isOpen, onClose, modelInstructions, selectedModel, setModelInstructions, selectedTone }) => {
-    // Find the current model name from AVAILABLE_MODELS
-    const currentModel = AVAILABLE_MODELS.find(model => model.id === selectedModel)?.name || selectedModel;
-
-    // Get the tone list for the selected model
-    const modelTones = TONES[selectedModel] || TONES[MODELS.GEMINI];
-
-    const handleReset = () => {
-        setModelInstructions({
-            ...modelInstructions,
-            [selectedModel]: DEFAULT_INSTRUCTIONS[selectedModel]
-        });
-    };
-
-    return (
-        <DialogWrapper isOpen={isOpen} onClose={onClose} className="w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <div className="flex-shrink-0 p-6 border-b">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h2 className="text-xl font-semibold">프롬프트 설정</h2>
-                        <p className="text-sm text-gray-500 mt-1">현재 번역 모델: {currentModel}</p>
-                    </div>
-                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-                        <X className="h-5 w-5" />
-                    </button>
-                </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-6">
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            사전 지침:
-                        </label>
-                        <textarea
-                            value={modelInstructions[selectedModel]['pre-instruction']}
-                            onChange={(e) => setModelInstructions({
-                                ...modelInstructions,
-                                [selectedModel]: {
-                                    ...modelInstructions[selectedModel],
-                                    'pre-instruction': e.target.value
-                                }
-                            })}
-                            className="w-full h-32 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 resize-none"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            사후 지침:
-                        </label>
-                        <textarea
-                            value={modelInstructions[selectedModel]['post-instruction']}
-                            onChange={(e) => setModelInstructions({
-                                ...modelInstructions,
-                                [selectedModel]: {
-                                    ...modelInstructions[selectedModel],
-                                    'post-instruction': e.target.value
-                                }
-                            })}
-                            className="w-full h-32 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 resize-none"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            톤 지침 - {modelTones.find(t => t.id === selectedTone)?.name}:
-                        </label>
-                        <textarea
-                            value={modelInstructions[selectedModel]['tone-instructions'][selectedTone]}
-                            onChange={(e) => setModelInstructions({
-                                ...modelInstructions,
-                                [selectedModel]: {
-                                    ...modelInstructions[selectedModel],
-                                    'tone-instructions': {
-                                        ...modelInstructions[selectedModel]['tone-instructions'],
-                                        [selectedTone]: e.target.value
-                                    }
-                                }
-                            })}
-                            className="w-full h-32 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 resize-none"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex-shrink-0 p-6 border-t bg-white">
-                <div className="flex justify-end space-x-3">
-                    <button
-                        onClick={handleReset}
-                        className="px-4 py-2 text-blue-500 hover:text-blue-600"
-                    >
-                        기본 설정으로 돌아가기
-                    </button>
-                    <button
-                        onClick={onClose}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                    >
-                        확인
-                    </button>
-                </div>
-            </div>
-        </DialogWrapper>
-    );
-};
-
-const RequestLogViewer = ({ isOpen, onClose, requestLog }) => {
-    return (
-        <DialogWrapper isOpen={isOpen} onClose={onClose} className="w-full max-w-2xl max-h-[80vh] flex flex-col">
-            <div className="p-4 border-b flex items-center justify-between">
-                <h2 className="text-xl font-semibold">마지막 API 요청</h2>
-                <button
-                    onClick={onClose}
-                    className="text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                    <X className="h-5 w-5" />
-                </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-4">
-                {requestLog ? (
-                    <pre className="whitespace-pre-wrap bg-gray-50 p-4 rounded-lg text-sm font-mono">
-                        {JSON.stringify(requestLog, null, 2)}
-                    </pre>
-                ) : (
-                    <div className="text-center text-gray-500 py-8">
-                        <FileText className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-                        <p>No request log available</p>
-                    </div>
-                )}
-            </div>
-        </DialogWrapper>
-    );
-};
-
 const Sidebar = ({
     isOpen,
     onClose,
@@ -1140,28 +1005,6 @@ const Sidebar = ({
                         >
                             <Volume2 className="h-4 w-4 mr-2" />
                             보이스 설정
-                        </button>
-
-                        <button
-                            onClick={() => {
-                                onOpenInstructions();
-                                onClose();
-                            }}
-                            className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg flex items-center transition-colors"
-                        >
-                            <Settings className="h-4 w-4 mr-2" />
-                            프롬프트 설정
-                        </button>
-
-                        <button
-                            onClick={() => {
-                                onOpenRequestLog();
-                                onClose();
-                            }}
-                            className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg flex items-center transition-colors"
-                        >
-                            <FileText className="h-4 w-4 mr-2" />
-                            마지막 요청
                         </button>
                     </div>
                 </div>
@@ -1537,17 +1380,14 @@ const TranslatorApp = () => {
     const [error, setError] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-    const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
     const [selectedModel, setSelectedModel] = useState(MODELS.GEMINI);
-    const [modelInstructions, setModelInstructions] = useState(DEFAULT_INSTRUCTIONS);
+    const [modelInstructions] = useState(DEFAULT_INSTRUCTIONS);
     const [history, setHistory] = useState([]);
     const [savedTranslations, setSavedTranslations] = useState([]);
     const [isSavedOpen, setIsSavedOpen] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [touchStart, setTouchStart] = useState(null);
     const [touchEnd, setTouchEnd] = useState(null);
-    const [requestLog, setRequestLog] = useState(null);
-    const [isRequestLogOpen, setIsRequestLogOpen] = useState(false);
     const [sourceLang, setSourceLang] = useState('auto');
     const [targetLang, setTargetLang] = useState('en');
     const [showSafetyWarning, setShowSafetyWarning] = useState(false);
@@ -1624,17 +1464,6 @@ const TranslatorApp = () => {
             // Add post instructions
             prompt += postInstruction;
 
-            // Set request log
-            const requestBody = {
-                model: "gemini-1.5-flash",
-                messages: [{ content: prompt }],
-                endpoint: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            };
-            setRequestLog(requestBody);
-
             const result = await model.generateContent(prompt);
             return result.response.text();
         } catch (error) {
@@ -1681,21 +1510,6 @@ const TranslatorApp = () => {
             });
             prompt += "\nNote: Provide a fresh translation different from the above versions.\n\n";
         }
-
-        const requestBody = {
-            model: modelUrl,
-            messages: [
-                { role: "system", content: prompt },
-                { role: "system", content: postInstruction }
-            ],
-            endpoint: "https://openrouter.ai/api/v1/chat/completions",
-            headers: {
-                'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.origin,
-                'X-Title': 'Translator App'
-            },
-        };
-        setRequestLog(requestBody);
 
         try {
             const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -1911,9 +1725,7 @@ const TranslatorApp = () => {
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
                 onOpenHistory={() => setIsHistoryOpen(true)}
-                onOpenInstructions={() => setIsInstructionsOpen(true)}
                 onOpenSaved={() => setIsSavedOpen(true)}
-                onOpenRequestLog={() => setIsRequestLogOpen(true)}
                 onOpenVoiceSettings={() => setIsVoiceSettingsOpen(true)}
             />
 
@@ -1944,26 +1756,11 @@ const TranslatorApp = () => {
                 onClearAll={clearAllSavedTranslations}
             />
 
-            <InstructionsModal
-                isOpen={isInstructionsOpen}
-                onClose={() => setIsInstructionsOpen(false)}
-                modelInstructions={modelInstructions}
-                selectedModel={selectedModel}
-                setModelInstructions={setModelInstructions}
-                selectedTone={selectedTone}
-            />
-
             <VoiceSettingsModal
                 isOpen={isVoiceSettingsOpen}
                 onClose={() => setIsVoiceSettingsOpen(false)}
                 selectedVoices={selectedVoices}
                 onVoiceChange={handleVoiceChange}
-            />
-
-            <RequestLogViewer
-                isOpen={isRequestLogOpen}
-                onClose={() => setIsRequestLogOpen(false)}
-                requestLog={requestLog}
             />
 
             <SafetyWarningDialog
