@@ -1,7 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
     X,
-    FileText,
     Clipboard,
     ClipboardCheck,
     ClipboardCopy,
@@ -49,7 +48,7 @@ const TONES = {
         {
             id: 'standard',
             name: 'Standard',
-            description: '일Regular translation'
+            description: 'Regular translation'
         },
         {
             id: 'casual',
@@ -59,7 +58,7 @@ const TONES = {
         {
             id: 'formal',
             name: 'Formal',
-            description: '공식적이고 예의 바른 말투 / Professional and polite tone'
+            description: 'Professional and polite tone'
         },
         {
             id: 'humorous',
@@ -80,7 +79,7 @@ const TONES = {
             id: 'literary',
             name: 'Literary',
             description: 'Elegant literary style'
-        },
+        }
     ],
     [MODELS.COMMAND]: [
         {
@@ -95,12 +94,12 @@ const TONES = {
         },
         {
             id: 'formal',
-            name: '격식체 / Formal',
+            name: 'Formal',
             description: 'Professional and polite tone'
         },
         {
             id: 'humorous',
-            name: '유머러스 / Humorous',
+            name: 'Humorous',
             description: 'Humorous and witty tone'
         },
         {
@@ -116,34 +115,34 @@ const DEFAULT_INSTRUCTIONS = {
         'pre-instruction': "You are a professional translator who specializes in providing accurate and natural translations. Your task is to create translations that convey the complete meaning, nuances, and cultural context of the source text while maintaining the linguistic features of the target language.",
         'post-instruction': "Note: Provide only the translated text. Do not include quotes, emojis, explanations or any additional comments.",
         'tone-instructions': {
-            'standard': `Tone and Style: Standard
+            'standard': `Tone and Style:
 - Maintain a neutral and clear tone
 - Use standard language conventions
 - Focus on accurate meaning transmission
 - Keep formal and informal elements balanced
 - Ensure natural flow in the target language`,
-            'casual': `Tone and Style: Casual
+            'casual': `Tone and Style:
 - Use everyday conversational language
 - Incorporate common colloquialisms when appropriate
 - Keep the tone friendly and approachable
 - Use contractions where natural
 - Maintain an informal yet respectful tone
 - Adapt idioms to target language equivalents`,
-            'formal': `Tone and Style: Formal
+            'formal': `Tone and Style:
 - Use formal language throughout
 - Maintain professional terminology
 - Avoid contractions and colloquialisms
 - Use proper honorifics where applicable
 - Keep a respectful and courteous tone
 - Prioritize precise and elegant expression`,
-            'humorous': `Tone and Style: Humorous
+            'humorous': `Tone and Style:
 - Use witty and clever expressions
 - Incorporate appropriate humor and wordplay
 - Keep the tone engaging and entertaining
 - Use creative language choices
 - Maintain cultural sensitivity while being playful
 - Adapt jokes and puns to target language context`,
-            'business': `Tone and Style: Business
+            'business': `Tone and Style:
 - Use professional business language
 - Incorporate industry-standard terminology
 - Maintain clear and concise expression
@@ -154,7 +153,7 @@ const DEFAULT_INSTRUCTIONS = {
 - Use simple, friendly words
 - Make sure everything is easy to understand
 - Keep the tone encouraging and playful`,
-            'literary': `Tone and Style: Literary
+            'literary': `Tone and Style:
 - Use sophisticated vocabulary and phrasing
 - Maintain artistic and creative expression
 - Preserve metaphors and literary devices
@@ -167,34 +166,34 @@ const DEFAULT_INSTRUCTIONS = {
         'pre-instruction': "You are a professional translator who specializes in providing accurate and natural translations. Your task is to create translations that convey the complete meaning, nuances, and cultural context of the source text while maintaining the linguistic features of the target language.",
         'post-instruction': "Note: Provide only the translated text. Do not include quotes, emojis, explanations or any additional comments.",
         'tone-instructions': {
-            'standard': `Tone and Style: Standard
+            'standard': `Tone and Style:
 - Maintain a neutral and clear tone
 - Use standard language conventions
 - Focus on accurate meaning transmission
 - Keep formal and informal elements balanced
 - Ensure natural flow in the target language`,
-            'casual': `Tone and Style: Casual
+            'casual': `Tone and Style:
 - Use everyday conversational language
 - Incorporate common colloquialisms when appropriate
 - Keep the tone friendly and approachable
 - Use contractions where natural
 - Maintain an informal yet respectful tone
 - Adapt idioms to target language equivalents`,
-            'formal': `Tone and Style: Formal
+            'formal': `Tone and Style:
 - Use formal language throughout
 - Maintain professional terminology
 - Avoid contractions and colloquialisms
 - Use proper honorifics where applicable
 - Keep a respectful and courteous tone
 - Prioritize precise and elegant expression`,
-            'humorous': `Tone and Style: Humorous
+            'humorous': `Tone and Style:
 - Use witty and clever expressions
 - Incorporate appropriate humor and wordplay
 - Keep the tone engaging and entertaining
 - Use creative language choices
 - Maintain cultural sensitivity while being playful
 - Adapt jokes and puns to target language context`,
-            'cardi_B': `Tone and Style: Cardi B
+            'cardi_B': `Tone and Style:
 - Be bold and unapologetic in delivery
 - Keep it real and unfiltered AF
 - Incorporate current street slang and vernacular
@@ -926,141 +925,6 @@ const DialogWrapper = ({ isOpen, onClose, children, className = '' }) => {
     );
 };
 
-const InstructionsModal = ({ isOpen, onClose, modelInstructions, selectedModel, setModelInstructions, selectedTone }) => {
-    // Find the current model name from AVAILABLE_MODELS
-    const currentModel = AVAILABLE_MODELS.find(model => model.id === selectedModel)?.name || selectedModel;
-
-    // Get the tone list for the selected model
-    const modelTones = TONES[selectedModel] || TONES[MODELS.GEMINI];
-
-    const handleReset = () => {
-        setModelInstructions({
-            ...modelInstructions,
-            [selectedModel]: DEFAULT_INSTRUCTIONS[selectedModel]
-        });
-    };
-
-    return (
-        <DialogWrapper isOpen={isOpen} onClose={onClose} className="w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <div className="flex-shrink-0 p-6 border-b">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h2 className="text-xl font-semibold">Instructions Settings</h2>
-                        <p className="text-sm text-gray-500 mt-1">Current Model: {currentModel}</p>
-                    </div>
-                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-                        <X className="h-5 w-5" />
-                    </button>
-                </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-6">
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Pre-translation Instructions:
-                        </label>
-                        <textarea
-                            value={modelInstructions[selectedModel]['pre-instruction']}
-                            onChange={(e) => setModelInstructions({
-                                ...modelInstructions,
-                                [selectedModel]: {
-                                    ...modelInstructions[selectedModel],
-                                    'pre-instruction': e.target.value
-                                }
-                            })}
-                            className="w-full h-32 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 resize-none"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Post-translation Instructions:
-                        </label>
-                        <textarea
-                            value={modelInstructions[selectedModel]['post-instruction']}
-                            onChange={(e) => setModelInstructions({
-                                ...modelInstructions,
-                                [selectedModel]: {
-                                    ...modelInstructions[selectedModel],
-                                    'post-instruction': e.target.value
-                                }
-                            })}
-                            className="w-full h-32 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 resize-none"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Tone Instructions for {modelTones.find(t => t.id === selectedTone)?.name}:
-                        </label>
-                        <textarea
-                            value={modelInstructions[selectedModel]['tone-instructions'][selectedTone]}
-                            onChange={(e) => setModelInstructions({
-                                ...modelInstructions,
-                                [selectedModel]: {
-                                    ...modelInstructions[selectedModel],
-                                    'tone-instructions': {
-                                        ...modelInstructions[selectedModel]['tone-instructions'],
-                                        [selectedTone]: e.target.value
-                                    }
-                                }
-                            })}
-                            className="w-full h-32 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 resize-none"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex-shrink-0 p-6 border-t bg-white">
-                <div className="flex justify-end space-x-3">
-                    <button
-                        onClick={handleReset}
-                        className="px-4 py-2 text-blue-500 hover:text-blue-600"
-                    >
-                        Reset to Default
-                    </button>
-                    <button
-                        onClick={onClose}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                    >
-                        Done
-                    </button>
-                </div>
-            </div>
-        </DialogWrapper>
-    );
-};
-
-const RequestLogViewer = ({ isOpen, onClose, requestLog }) => {
-    return (
-        <DialogWrapper isOpen={isOpen} onClose={onClose} className="w-full max-w-2xl max-h-[80vh] flex flex-col">
-            <div className="p-4 border-b flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Last API Request</h2>
-                <button
-                    onClick={onClose}
-                    className="text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                    <X className="h-5 w-5" />
-                </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-4">
-                {requestLog ? (
-                    <pre className="whitespace-pre-wrap bg-gray-50 p-4 rounded-lg text-sm font-mono">
-                        {JSON.stringify(requestLog, null, 2)}
-                    </pre>
-                ) : (
-                    <div className="text-center text-gray-500 py-8">
-                        <FileText className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-                        <p>No request log available</p>
-                    </div>
-                )}
-            </div>
-        </DialogWrapper>
-    );
-};
-
 const Sidebar = ({
     isOpen,
     onClose,
@@ -1140,28 +1004,6 @@ const Sidebar = ({
                         >
                             <Volume2 className="h-4 w-4 mr-2" />
                             Voice Settings
-                        </button>
-
-                        <button
-                            onClick={() => {
-                                onOpenInstructions();
-                                onClose();
-                            }}
-                            className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg flex items-center transition-colors"
-                        >
-                            <Settings className="h-4 w-4 mr-2" />
-                            Instructions
-                        </button>
-
-                        <button
-                            onClick={() => {
-                                onOpenRequestLog();
-                                onClose();
-                            }}
-                            className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg flex items-center transition-colors"
-                        >
-                            <FileText className="h-4 w-4 mr-2" />
-                            Last API Request
                         </button>
                     </div>
                 </div>
@@ -1537,17 +1379,14 @@ const TranslatorApp = () => {
     const [error, setError] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-    const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
     const [selectedModel, setSelectedModel] = useState(MODELS.GEMINI);
-    const [modelInstructions, setModelInstructions] = useState(DEFAULT_INSTRUCTIONS);
+    const [modelInstructions] = useState(DEFAULT_INSTRUCTIONS);
     const [history, setHistory] = useState([]);
     const [savedTranslations, setSavedTranslations] = useState([]);
     const [isSavedOpen, setIsSavedOpen] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [touchStart, setTouchStart] = useState(null);
     const [touchEnd, setTouchEnd] = useState(null);
-    const [requestLog, setRequestLog] = useState(null);
-    const [isRequestLogOpen, setIsRequestLogOpen] = useState(false);
     const [sourceLang, setSourceLang] = useState('auto');
     const [targetLang, setTargetLang] = useState('en');
     const [showSafetyWarning, setShowSafetyWarning] = useState(false);
@@ -1624,17 +1463,6 @@ const TranslatorApp = () => {
             // Add post instructions
             prompt += postInstruction;
 
-            // Set request log
-            const requestBody = {
-                model: "gemini-1.5-flash",
-                messages: [{ content: prompt }],
-                endpoint: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            };
-            setRequestLog(requestBody);
-
             const result = await model.generateContent(prompt);
             return result.response.text();
         } catch (error) {
@@ -1681,21 +1509,6 @@ const TranslatorApp = () => {
             });
             prompt += "\nNote: Provide a fresh translation different from the above versions.\n\n";
         }
-
-        const requestBody = {
-            model: modelUrl,
-            messages: [
-                { role: "system", content: prompt },
-                { role: "system", content: postInstruction }
-            ],
-            endpoint: "https://openrouter.ai/api/v1/chat/completions",
-            headers: {
-                'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.origin,
-                'X-Title': 'Translator App'
-            },
-        };
-        setRequestLog(requestBody);
 
         try {
             const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -1911,9 +1724,7 @@ const TranslatorApp = () => {
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
                 onOpenHistory={() => setIsHistoryOpen(true)}
-                onOpenInstructions={() => setIsInstructionsOpen(true)}
                 onOpenSaved={() => setIsSavedOpen(true)}
-                onOpenRequestLog={() => setIsRequestLogOpen(true)}
                 onOpenVoiceSettings={() => setIsVoiceSettingsOpen(true)}
             />
 
@@ -1944,26 +1755,11 @@ const TranslatorApp = () => {
                 onClearAll={clearAllSavedTranslations}
             />
 
-            <InstructionsModal
-                isOpen={isInstructionsOpen}
-                onClose={() => setIsInstructionsOpen(false)}
-                modelInstructions={modelInstructions}
-                selectedModel={selectedModel}
-                setModelInstructions={setModelInstructions}
-                selectedTone={selectedTone}
-            />
-
             <VoiceSettingsModal
                 isOpen={isVoiceSettingsOpen}
                 onClose={() => setIsVoiceSettingsOpen(false)}
                 selectedVoices={selectedVoices}
                 onVoiceChange={handleVoiceChange}
-            />
-
-            <RequestLogViewer
-                isOpen={isRequestLogOpen}
-                onClose={() => setIsRequestLogOpen(false)}
-                requestLog={requestLog}
             />
 
             <SafetyWarningDialog
