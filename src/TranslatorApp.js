@@ -32,80 +32,55 @@ const MODELS = {
 
 const LANGUAGE_NAMES = {
     'auto': 'Auto Detect',
-    'en': 'English',
-    'fr': 'French / Français',
-    'es': 'Spanish / Español',
-    'it': 'Italian / Italiano',
-    'de': 'German / Deutsch',
-    'pt': 'Brazilian Portuguese / Português',
-    'ja': 'Japanese / 日本語',
-    'ko': 'Korean / 한국어',
-    'zh': 'Simplified Chinese / 简体中文',
-    'ar': 'Arabic / العربية'
+    'en': '영어',
+    'fr': '프랑스어',
+    'es': '스페인어',
+    'it': '이탈리아어',
+    'de': '독일어',
+    'pt': '포르투갈어',
+    'ja': '일본어',
+    'ko': '한국어',
+    'zh': '중국어 간체',
+    'ar': '아랍어'
 };
 
 const TONES = {
     [MODELS.GEMINI]: [
         {
             id: 'standard',
-            name: '표준 / Standard',
-            description: '일반적인 번역 / Regular translation'
+            name: '표준',
+            description: '일반적인 번역'
         },
         {
             id: 'casual',
-            name: '캐주얼 / Casual',
-            description: '친근하고 편안한 말투 / Friendly and relaxed tone'
+            name: '캐주얼',
+            description: '친근하고 편안한 말투'
         },
         {
             id: 'formal',
-            name: '격식체 / Formal',
-            description: '공식적이고 예의 바른 말투 / Professional and polite tone'
+            name: '격식체',
+            description: '공식적이고 예의 바른 말투'
         },
         {
             id: 'humorous',
-            name: '유머러스 / Humorous',
-            description: '유머러스하고 재치있는 말투 / Humorous and witty tone'
+            name: '유머러스',
+            description: '유머러스하고 재치있는 말투'
         },
         {
             id: 'business',
-            name: '비즈니스 / Business',
-            description: '업무용 전문적인 말투 / Business-oriented tone'
+            name: '비즈니스',
+            description: '업무용 전문적인 말투'
         },
         {
-            id: 'educational',
-            name: '교육 / Educational',
-            description: '이해하기 쉬운 교육용 말투 / Clear instructional tone'
+            id: 'kid_friendly',
+            name: '어린이용',
+            description: '쉽고 재미있는 어린이 맞춤 설명'
         },
         {
             id: 'literary',
-            name: '문학 / Literary',
-            description: '우아하고 세련된 문학적 말투 / Elegant literary style'
+            name: '문학',
+            description: '우아하고 세련된 문학적 말투'
         },
-        {
-            id: 'diplomatic',
-            name: '외교 / Diplomatic',
-            description: '신중하고 정중한 말투 / Tactful and considerate tone'
-        },
-        {
-            id: 'marketing',
-            name: '마케팅 / Marketing',
-            description: '설득력 있는 홍보용 말투 / Persuasive marketing style'
-        },
-        {
-            id: 'academic',
-            name: '학술 / Academic',
-            description: '학술적이고 전문적인 말투 / Scholarly and technical tone'
-        },
-        {
-            id: 'legal',
-            name: '법률 / Legal',
-            description: '법률 문서 스타일 / Legal document style'
-        },
-        {
-            id: 'poetic',
-            name: '시적 / Poetic',
-            description: '운율있고 시적인 말투 / Rhythmic and poetic tone'
-        }
     ],
     [MODELS.COMMAND]: [
         {
@@ -175,13 +150,10 @@ const DEFAULT_INSTRUCTIONS = {
 - Use appropriate business formalities
 - Keep a professional yet accessible tone
 - Focus on clarity and efficiency in communication`,
-            'educational': `Tone and Style:
-- Use clear, instructional language
-- Break down complex concepts
-- Maintain an engaging teaching tone
-- Use examples where appropriate
-- Focus on clarity and comprehension
-- Include appropriate learning-oriented terminology`,
+            'kid_friendly': `Tone and Style: Kid-Friendly
+- Use simple, friendly words
+- Make sure everything is easy to understand
+- Keep the tone encouraging and playful`,
             'literary': `Tone and Style:
 - Use sophisticated vocabulary and phrasing
 - Maintain artistic and creative expression
@@ -189,41 +161,6 @@ const DEFAULT_INSTRUCTIONS = {
 - Focus on aesthetic quality
 - Keep the elegant and refined style
 - Adapt cultural references appropriately`,
-            'diplomatic': `Tone and Style:
-- Use tactful and measured language
-- Maintain diplomatic courtesy
-- Focus on neutral and balanced expression
-- Use appropriate diplomatic terminology
-- Avoid potentially sensitive phrasing
-- Preserve formal diplomatic conventions`,
-            'marketing': `Tone and Style:
-- Use persuasive and engaging language
-- Incorporate marketing terminology
-- Maintain brand voice and style
-- Focus on impact and call-to-action
-- Use compelling and attractive phrasing
-- Adapt promotional elements appropriately`,
-            'academic': `Tone and Style:
-- Use scholarly and technical language
-- Maintain academic conventions
-- Include field-specific terminology
-- Focus on precision and accuracy
-- Use appropriate citations and references
-- Preserve academic tone and structure`,
-            'legal': `Tone and Style:
-- Use precise legal terminology
-- Maintain legal document structure
-- Focus on exact meaning and implications
-- Use appropriate legal conventions
-- Preserve legal clarity and specificity
-- Include necessary legal formatting`,
-            'poetic': `Tone and Style:
-- Preserve rhythm and meter when possible
-- Maintain poetic devices and imagery
-- Focus on artistic expression
-- Use appropriate poetic conventions
-- Keep the lyrical quality
-- Adapt cultural poetic elements`
         }
     },
     [MODELS.COMMAND]: {
@@ -395,17 +332,17 @@ const LanguageSelector = ({
     onResetTranslations
 }) => {
     const languages = [
-        { code: 'auto', name: 'Auto Detect / 자동 감지' },
-        { code: 'en', name: 'English' },
-        { code: 'fr', name: 'French / Français' },
-        { code: 'es', name: 'Spanish / Español' },
-        { code: 'it', name: 'Italian / Italiano' },
-        { code: 'de', name: 'German / Deutsch' },
-        { code: 'pt', name: 'Brazilian Portuguese / Português' },
-        { code: 'ja', name: 'Japanese / 日本語' },
-        { code: 'ko', name: 'Korean / 한국어' },
-        { code: 'zh', name: 'Simplified Chinese / 简体中文' },
-        { code: 'ar', name: 'Arabic / العربية' }
+        { code: 'auto', name: '자동 감지' },
+        { code: 'en', name: '영어' },
+        { code: 'fr', name: '프랑스어' },
+        { code: 'es', name: '스페인어' },
+        { code: 'it', name: '이탈리아어' },
+        { code: 'de', name: '독일어' },
+        { code: 'pt', name: '포르투갈어' },
+        { code: 'ja', name: '일본어' },
+        { code: 'ko', name: '한국어' },
+        { code: 'zh', name: '중국어 간체' },
+        { code: 'ar', name: '아랍어' }
     ];
 
     const switchLanguages = () => {
@@ -556,8 +493,8 @@ const VoiceSettingsModal = ({ isOpen, onClose, selectedVoices, onVoiceChange }) 
             <div className="flex-shrink-0 p-6 border-b">
                 <div className="flex justify-between items-center">
                     <div>
-                        <h2 className="text-xl font-semibold">Voice Settings</h2>
-                        <p className="text-sm text-gray-500 mt-1">Select preferred voices for each language</p>
+                        <h2 className="text-xl font-semibold">보이스 설정</h2>
+                        <p className="text-sm text-gray-500 mt-1">언어별 선호하는 음성을 선택하세요</p>
                     </div>
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
                         <X className="h-5 w-5" />
@@ -1008,8 +945,8 @@ const InstructionsModal = ({ isOpen, onClose, modelInstructions, selectedModel, 
             <div className="flex-shrink-0 p-6 border-b">
                 <div className="flex justify-between items-center">
                     <div>
-                        <h2 className="text-xl font-semibold">Instructions Settings</h2>
-                        <p className="text-sm text-gray-500 mt-1">Current Model: {currentModel}</p>
+                        <h2 className="text-xl font-semibold">프롬프트 설정</h2>
+                        <p className="text-sm text-gray-500 mt-1">현재 번역 모델: {currentModel}</p>
                     </div>
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
                         <X className="h-5 w-5" />
@@ -1021,7 +958,7 @@ const InstructionsModal = ({ isOpen, onClose, modelInstructions, selectedModel, 
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Pre-translation Instructions:
+                            사전 지침:
                         </label>
                         <textarea
                             value={modelInstructions[selectedModel]['pre-instruction']}
@@ -1038,7 +975,7 @@ const InstructionsModal = ({ isOpen, onClose, modelInstructions, selectedModel, 
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Post-translation Instructions:
+                            사후 지침:
                         </label>
                         <textarea
                             value={modelInstructions[selectedModel]['post-instruction']}
@@ -1055,7 +992,7 @@ const InstructionsModal = ({ isOpen, onClose, modelInstructions, selectedModel, 
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Tone Instructions for {modelTones.find(t => t.id === selectedTone)?.name}:
+                            톤 지침 - {modelTones.find(t => t.id === selectedTone)?.name}:
                         </label>
                         <textarea
                             value={modelInstructions[selectedModel]['tone-instructions'][selectedTone]}
@@ -1081,13 +1018,13 @@ const InstructionsModal = ({ isOpen, onClose, modelInstructions, selectedModel, 
                         onClick={handleReset}
                         className="px-4 py-2 text-blue-500 hover:text-blue-600"
                     >
-                        Reset to Default
+                        기본 설정으로 돌아가기
                     </button>
                     <button
                         onClick={onClose}
                         className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                     >
-                        Done
+                        확인
                     </button>
                 </div>
             </div>
@@ -1099,7 +1036,7 @@ const RequestLogViewer = ({ isOpen, onClose, requestLog }) => {
     return (
         <DialogWrapper isOpen={isOpen} onClose={onClose} className="w-full max-w-2xl max-h-[80vh] flex flex-col">
             <div className="p-4 border-b flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Last API Request</h2>
+                <h2 className="text-xl font-semibold">마지막 API 요청</h2>
                 <button
                     onClick={onClose}
                     className="text-gray-500 hover:text-gray-700 transition-colors"
@@ -1180,7 +1117,7 @@ const Sidebar = ({
                             className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg flex items-center transition-colors"
                         >
                             <History className="h-4 w-4 mr-2" />
-                            Translation History
+                            번역 기록
                         </button>
 
                         <button
@@ -1191,7 +1128,7 @@ const Sidebar = ({
                             className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg flex items-center transition-colors"
                         >
                             <BookmarkIcon className="h-4 w-4 mr-2" />
-                            Saved Translations
+                            저장된 번역
                         </button>
 
                         <button
@@ -1202,7 +1139,7 @@ const Sidebar = ({
                             className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg flex items-center transition-colors"
                         >
                             <Volume2 className="h-4 w-4 mr-2" />
-                            Voice Settings
+                            보이스 설정
                         </button>
 
                         <button
@@ -1213,7 +1150,7 @@ const Sidebar = ({
                             className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg flex items-center transition-colors"
                         >
                             <Settings className="h-4 w-4 mr-2" />
-                            Instructions
+                            프롬프트 설정
                         </button>
 
                         <button
@@ -1224,7 +1161,7 @@ const Sidebar = ({
                             className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg flex items-center transition-colors"
                         >
                             <FileText className="h-4 w-4 mr-2" />
-                            Last API Request
+                            마지막 요청
                         </button>
                     </div>
                 </div>
@@ -1299,7 +1236,7 @@ const SavedTranslationsDialog = ({ isOpen, onClose, savedTranslations, onSelectS
                 onClick={e => e.stopPropagation()}
             >
                 <div className="p-4 border-b flex items-center justify-between">
-                    <h2 className="text-xl font-semibold">Saved Translations</h2>
+                    <h2 className="text-xl font-semibold">저장된 번역</h2>
                     <button
                         onClick={handleClose}
                         className="text-gray-500 hover:text-gray-700 transition-colors"
@@ -1312,7 +1249,7 @@ const SavedTranslationsDialog = ({ isOpen, onClose, savedTranslations, onSelectS
                     <div className="relative">
                         <input
                             type="text"
-                            placeholder="Search translations..."
+                            placeholder="검색하기..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -1354,11 +1291,11 @@ const SavedTranslationsDialog = ({ isOpen, onClose, savedTranslations, onSelectS
                                     </div>
                                     <div className="space-y-2">
                                         <div>
-                                            <div className="text-xs font-medium text-gray-500 mb-1">Original:</div>
+                                            <div className="text-xs font-medium text-gray-500 mb-1">원문:</div>
                                             <div className="text-sm">{item.inputText}</div>
                                         </div>
                                         <div>
-                                            <div className="text-xs font-medium text-gray-500 mb-1">Translation:</div>
+                                            <div className="text-xs font-medium text-gray-500 mb-1">번역:</div>
                                             <div className="text-sm">{item.translatedText}</div>
                                         </div>
                                     </div>
@@ -1370,7 +1307,7 @@ const SavedTranslationsDialog = ({ isOpen, onClose, savedTranslations, onSelectS
                                             }}
                                             className="text-sm text-blue-500 hover:text-blue-600"
                                         >
-                                            Load translation
+                                            번역 불러오기
                                         </button>
                                     </div>
                                 </div>
@@ -1385,7 +1322,7 @@ const SavedTranslationsDialog = ({ isOpen, onClose, savedTranslations, onSelectS
                             onClick={() => setShowConfirmDialog(true)}
                             className="text-red-500 hover:text-red-600 text-sm"
                         >
-                            Clear all saved translations
+                            저장된 번역 전부 지우기
                         </button>
                     </div>
                 )}
@@ -1463,7 +1400,7 @@ const HistoryPanel = ({ isOpen, onClose, history, onSelectHistory, onDeleteHisto
             >
                 <div className="p-4 border-b flex-shrink-0">
                     <div className="flex justify-between items-center">
-                        <h2 className="text-xl font-semibold">Translation History</h2>
+                        <h2 className="text-xl font-semibold">번역 기록</h2>
                         <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
                             <X className="h-5 w-5" />
                         </button>
@@ -1477,7 +1414,7 @@ const HistoryPanel = ({ isOpen, onClose, history, onSelectHistory, onDeleteHisto
                                 onClick={() => setShowConfirmDialog(true)}
                                 className="w-full px-4 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors mb-4"
                             >
-                                Clear All History
+                                모든 기록 삭제
                             </button>
                         )}
 
@@ -1568,13 +1505,13 @@ const SafetyWarningDialog = ({ isOpen, onClose }) => {
                         </h3>
 
                         <p className="text-gray-600 mb-4">
-                            The translation request was blocked due to potentially inappropriate content. Please review your text and try again with appropriate content.
+                            부적절한 콘텐츠로 인해 번역에 실패하였습니다. 텍스트를 검토하고 다시 시도해주세요.
                         </p>
 
                         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
                             <div className="font-medium text-yellow-800 mb-1">Note</div>
                             <div className="text-yellow-700 text-sm">
-                                Our translation service maintains certain content standards to ensure safe and respectful communication.
+                                참고: 후추 번역 서비스는 안전하고 존중하는 의사소통을 위해 특정 콘텐츠 기준을 준수합니다. 
                             </div>
                         </div>
 
@@ -2114,7 +2051,7 @@ const TranslatorApp = () => {
                         <TextArea
                             value={inputText}
                             onChange={(e) => setInputText(e.target.value)}
-                            placeholder="Enter text..."
+                            placeholder="번역할 텍스트를 입력하세요..."
                             showSpeaker={true}
                             maxLength={5000}
                             onClear={() => handleClear()}
@@ -2135,7 +2072,7 @@ const TranslatorApp = () => {
                                 );
                                 setTranslations(updatedTranslations);
                             }}
-                            placeholder="Translation will appear here..."
+                            placeholder="번역 결과가 여기 표기됩니다..."
                             showSpeaker={true}
                             onTouchStart={onTouchStart}
                             onTouchMove={onTouchMove}
@@ -2167,7 +2104,7 @@ const TranslatorApp = () => {
                                 }`}
                         >
                             <ArrowRightLeft className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                            {isLoading ? 'Translating...' : 'Translate'}
+                            {isLoading ? '번역 중...' : '번역하기'}
                         </button>
 
                         {translatedText && (
@@ -2180,7 +2117,7 @@ const TranslatorApp = () => {
                                             setCopySuccess(true);
                                             setTimeout(() => setCopySuccess(false), 2000);
                                         } catch (err) {
-                                            console.error('Failed to copy text:', err);
+                                            console.error('복사에 실패하였습니다.:', err);
                                         }
                                     }}
                                     className="px-6 py-2 rounded-lg flex items-center justify-center w-full sm:w-auto bg-gray-100 hover:bg-gray-200 transition-colors"
@@ -2188,12 +2125,12 @@ const TranslatorApp = () => {
                                     {copySuccess ? (
                                         <>
                                             <ClipboardCheck className="mr-2 h-4 w-4 text-green-500" />
-                                            Copied!
+                                            복사됨!
                                         </>
                                     ) : (
                                         <>
                                             <ClipboardCopy className="mr-2 h-4 w-4" />
-                                            Copy
+                                            복사
                                         </>
                                     )}
                                 </button>
@@ -2209,12 +2146,12 @@ const TranslatorApp = () => {
                                     {saveSuccess ? (
                                         <>
                                             <Check className="mr-2 h-4 w-4" />
-                                            Saved!
+                                            저장됨!
                                         </>
                                     ) : (
                                         <>
                                             <BookmarkIcon className="mr-2 h-4 w-4" />
-                                            Save
+                                            저장
                                         </>
                                     )}
                                 </button>
